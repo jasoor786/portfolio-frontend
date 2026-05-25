@@ -57,12 +57,10 @@
         <div id="blog-feed" style="max-width:700px; margin: 0 auto;">Loading articles...</div>
     </div>
 
-   <script>
-        // CHANGE THIS URL to your actual running live Vercel backend address link!
+    <script>
+        // Set to your verified live backend API route link
         const API_URL = "https://portfolio-backend-lovat-iota.vercel.app";
         let activeUser = "";
-
-        function handleLogin() {
 
         function handleLogin() {
             const user = document.getElementById('username').value;
@@ -85,7 +83,7 @@
                     document.getElementById('login-error').innerText = data.message;
                     document.getElementById('login-error').classList.remove('hidden');
                 }
-            }).catch(() => alert("Verify your backend URL config connection string link."));
+            }).catch(() => alert("Error connecting to backend database server."));
         }
 
         function handleLogout() {
@@ -106,15 +104,100 @@
                     
                     posts.forEach(post => {
                         let commentsHTML = '';
-                        post.comments.forEach(c => {
-                            commentsHTML += `
-                                <div class="comment-item">
-                                    <strong>@${c.username}:</strong> ${c.text}
-                                </div>
-                            `;
-                        });
+                        if (post.comments) {
+                            post.comments.forEach(c => {
+                                commentsHTML += `<div class="comment-item"><strong>@${c.username}:</strong> ${c.text}</div>`;
+                            });
+                        }
 
-                        // Show edit/delete options if the active user authored the article
                         const controlsHTML = (activeUser === post.author || activeUser === 'admin') ? `
                             <div class="post-actions">
-                                <button style="background:#f1c40f; color:#2f3542;" onclick="loadEditForm('${post._id}', \`${post.title}\`, \`${
+                                <button style="background:#f1c40f; color:#2f3542;" onclick="loadEditForm('${post._id}', \`${post.title}\`, \`${post.content}\`)">Edit</button>
+                                <button style="background:#e74c3c;" onclick="deletePost('${post._id}')">Delete</button>
+                            </div>
+                        ` : '';
+
+                        feed.innerHTML += `
+                            <div class="post-card">
+                                <h3>${post.title}</h3>
+                                <div class="post-meta">Published by <strong>@${post.author}</strong> on ${new Date(post.date).toLocaleDateString()}</div>
+                                <p style="line-height:1.6; white-space: pre-wrap;">${post.content}</p>
+                                ${controlsHTML}
+                                
+                                <div class="comment-section">
+                                    <h4>Comments (${post.comments ? post.comments.length : 0})</h4>
+                                    <div>${commentsHTML || '<p style="font-size:0.85rem; color:#aaa; margin:0;">No comments yet.</p>'}</div>
+                                    <div class="comment-input-group">
+                                        <input type="text" id="comment-in-${post._id}" placeholder="Write a comment...">
+                                        <button onclick="addComment('${post._id}')">Post</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                });
+        }
+
+        function submitPost() {
+            const id = document.getElementById('edit-post-id').value;
+            const title = document.getElementById('post-title').value;
+            const content = document.getElementById('post-content').value;
+
+            if (!title || !content) return alert("Fields cannot be empty.");
+
+            const method = id ? 'PUT' : 'POST';
+            const endpoint = id ? `${API_URL}/api/posts/${id}` : `${API_URL}/api/posts`;
+            const payload = id ? { title, content } : { title, content, author: activeUser };
+
+            fetch(endpoint, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(() => {
+                resetForm();
+                fetchFeed();
+            });
+        }
+
+        function loadEditForm(id, title, content) {
+            document.getElementById('edit-post-id').value = id;
+            document.getElementById('post-title').value = title;
+            document.getElementById('post-content').value = content;
+            document.getElementById('form-title').innerText = "Edit Your Blog Post";
+            document.getElementById('submit-post-btn').innerText = "Update Article";
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetForm() {
+            document.getElementById('edit-post-id').value = '';
+            document.getElementById('post-title').value = '';
+            document.getElementById('post-content').value = '';
+            document.getElementById('form-title').innerText = "Compose a New Blog Post";
+            document.getElementById('submit-post-btn').innerText = "Publish Article";
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
+        }
+
+        function deletePost(id) {
+            if(confirm("Delete this post permanently?")) {
+                fetch(`${API_URL}/api/posts/${id}`, { method: 'DELETE' }).then(() => fetchFeed());
+            }
+        }
+
+        function addComment(postId) {
+            const inputField = document.getElementById(`comment-in-${postId}`);
+            const text = inputField.value;
+            if(!text) return;
+
+            fetch(`${API_URL}/api/posts/${postId}/comments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: activeUser, text: text })
+            }).then(() => {
+                inputField.value = '';
+                fetchFeed();
+            });
+        }
+    </script>
+</body>
+</html>
