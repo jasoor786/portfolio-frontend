@@ -57,10 +57,12 @@
         <div id="blog-feed" style="max-width:700px; margin: 0 auto;">Loading articles...</div>
     </div>
 
-    <script>
-        // CRUCIAL: Find this declaration and paste your actual live Vercel backend link!
-      const API_URL = "https://portfolio-backend-lovat-iota.vercel.app";
+   <script>
+        // CHANGE THIS URL to your actual running live Vercel backend address link!
+        const API_URL = "https://portfolio-backend-lovat-iota.vercel.app";
         let activeUser = "";
+
+        function handleLogin() {
 
         function handleLogin() {
             const user = document.getElementById('username').value;
