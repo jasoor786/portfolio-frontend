@@ -3,86 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basic E-Commerce Web App</title>
+    <title>Dynamic Blogging Platform</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; color: #333; margin: 0; padding: 20px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f6fa; color: #2f3640; margin: 0; padding: 20px; }
         .hidden { display: none !important; }
-        .navbar { display: flex; justify-content: space-between; align-items: center; background: #2c3e50; color: white; padding: 10px 20px; border-radius: 8px; margin-bottom: 20px; }
-        .navbar h2 { margin: 0; }
-        .nav-links button { background: none; color: white; border: 1px solid white; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 5px; }
-        .container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; max-width: 1200px; margin: 0 auto; }
-        @media(max-width: 768px) { .container { grid-template-columns: 1fr; } }
-        .box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
-        .product-card { border: 1px solid #eee; padding: 15px; border-radius: 6px; text-align: center; background: #fff; }
-        .product-icon { font-size: 3rem; margin-bottom: 10px; }
-        .product-card h4 { margin: 10px 0 5px 0; }
-        .price { color: #e74c3c; font-weight: bold; margin-bottom: 10px; }
-        button.action-btn { background: #2ecc71; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
-        button.action-btn:hover { background: #27ae60; }
-        .cart-item, .order-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 0.95rem; }
-        .total { font-size: 1.2rem; font-weight: bold; margin: 15px 0; text-align: right; }
-        .login-box { max-width: 400px; margin: 100px auto; text-align: center; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .box { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 700px; margin: 20px auto; }
+        input, textarea, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #dcdde1; border-radius: 4px; box-sizing: border-box; }
+        textarea { height: 120px; resize: vertical; }
+        button { background-color: #2f3542; color: white; border: none; font-weight: bold; cursor: pointer; }
+        button:hover { background-color: #57606f; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #dcdde1; padding-bottom: 10px; max-width: 700px; margin: 0 auto; }
+        .post-card { background: white; padding: 20px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); margin-bottom: 20px; position: relative; border-left: 5px solid #74b9ff; }
+        .post-meta { font-size: 0.85rem; color: #7f8c8d; margin-bottom: 10px; }
+        .post-actions { display: flex; gap: 10px; margin-top: 15px; }
+        .post-actions button { width: auto; padding: 6px 12px; font-size: 0.85rem; }
+        .comment-section { background: #f8f9fa; border-top: 1px solid #edf2f7; padding: 15px; margin-top: 15px; border-radius: 4px; }
+        .comment-item { font-size: 0.9rem; padding: 6px 0; border-bottom: 1px dashed #dcdde1; }
+        .comment-item:last-child { border-bottom: none; }
+        .comment-input-group { display: flex; gap: 8px; margin-top: 10px; }
+        .comment-input-group input { margin: 0; padding: 8px; }
+        .comment-input-group button { width: auto; margin: 0; padding: 8px 15px; background-color: #1dd1a1; }
     </style>
 </head>
 <body>
 
-    <div id="login-view" class="box login-box">
-        <h2>Gadget Store Login</h2>
-        <p style="font-size:0.85rem; color:#666;">Customer: user / user123 | Admin: admin / admin123</p>
+    <div id="login-view" class="box" style="text-align:center; max-width:400px; margin-top:100px;">
+        <h2>Join the Conversation</h2>
+        <p style="font-size:0.85rem; color:#7f8c8d;">Login using credentials: user / user123</p>
         <input type="text" id="username" placeholder="Username">
         <input type="password" id="password" placeholder="Password">
-        <button class="action-btn" style="background:#34495e;" onclick="handleLogin()">Sign In</button>
+        <button onclick="handleLogin()">Sign In</button>
         <p id="login-error" style="color:red; margin-top:10px;" class="hidden"></p>
     </div>
 
     <div id="app-view" class="hidden">
         <div class="navbar">
-            <h2 id="store-title">TechGadget Shop</h2>
-            <div class="nav-links">
-                <span id="user-display" style="margin-right:10px;"></span>
-                <button id="admin-panel-btn" class="hidden" onclick="showAdminPanel()" style="background:#f1c40f; color:#333; border:none; font-weight:bold;">Admin Portal</button>
-                <button onclick="handleLogout()">Logout</button>
+            <h2>Community Hub Blog</h2>
+            <div>
+                <span id="user-tag" style="font-weight:bold; margin-right:10px;"></span>
+                <button onclick="handleLogout()" style="width:auto; padding:5px 10px; background:#e74c3c;">Logout</button>
             </div>
         </div>
 
-        <div id="customer-dashboard" class="container">
-            <div class="box">
-                <h3>Product Catalog</h3>
-                <div id="product-list" class="product-grid">Loading products...</div>
-            </div>
-            <div class="box">
-                <h3>Shopping Cart</h3>
-                <div id="cart-contents">Your cart is empty.</div>
-                <div class="total">Total: $<span id="cart-total">0</span></div>
-                <button class="action-btn" style="background:#3498db;" onclick="checkoutCart()">Place Order (Checkout)</button>
-            </div>
+        <div class="box">
+            <h3 id="form-title">Compose a New Blog Post</h3>
+            <input type="hidden" id="edit-post-id">
+            <input type="text" id="post-title" placeholder="Article Title">
+            <textarea id="post-content" placeholder="Share your insights..."></textarea>
+            <button id="submit-post-btn" onclick="submitPost()">Publish Article</button>
+            <button id="cancel-edit-btn" class="hidden" onclick="resetForm()" style="background:#718093;">Cancel Edit</button>
         </div>
 
-        <div id="admin-dashboard" class="box container hidden" style="max-width:1200px; margin-top:20px;">
-            <div>
-                <h3>Add New Inventory Product</h3>
-                <input type="text" id="new-p-name" placeholder="Item Name">
-                <input type="number" id="new-p-price" placeholder="Price ($)">
-                <input type="text" id="new-p-desc" placeholder="Brief Description">
-                <input type="text" id="new-p-icon" placeholder="Emoji Icon (e.g. 💻, 📱)">
-                <button class="action-btn" onclick="addNewProduct()">Upload to Catalog</button>
-                <button onclick="hideAdminPanel()" style="margin-top:10px; width:100%; padding:8px;">Back to Storefront</button>
-            </div>
-            <div>
-                <h3>Incoming Customer Orders</h3>
-                <div id="admin-orders-list">No orders processed yet.</div>
-            </div>
-        </div>
+        <div id="blog-feed" style="max-width:700px; margin: 0 auto;">Loading articles...</div>
     </div>
 
     <script>
-        // CHANGE THIS URL to your actual running live Vercel backend address link!
-        const API_URL = "https://portfolio-backend-lovat-iota.vercel.app";
-
-        let cart = [];
-        let currentRole = "User";
+        // CRUCIAL: Find this declaration and paste your actual live Vercel backend link!
+      const API_URL = "https://portfolio-backend-lovat-iota.vercel.app";
+        let activeUser = "";
 
         function handleLogin() {
             const user = document.getElementById('username').value;
@@ -96,162 +74,45 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    currentRole = data.role;
+                    activeUser = data.username;
                     document.getElementById('login-view').classList.add('hidden');
                     document.getElementById('app-view').classList.remove('hidden');
-                    document.getElementById('user-display').innerText = `Role: ${currentRole}`;
-                    
-                    if (currentRole === 'Admin') {
-                        document.getElementById('admin-panel-btn').classList.remove('hidden');
-                    } else {
-                        document.getElementById('admin-panel-btn').classList.add('hidden');
-                    }
-                    
-                    fetchCatalog();
+                    document.getElementById('user-tag').innerText = `@${activeUser}`;
+                    fetchFeed();
                 } else {
                     document.getElementById('login-error').innerText = data.message;
                     document.getElementById('login-error').classList.remove('hidden');
                 }
-            }).catch(() => alert("Verify your API_URL config link is correct and active."));
+            }).catch(() => alert("Verify your backend URL config connection string link."));
         }
 
         function handleLogout() {
-            cart = [];
-            updateCartUI();
-            hideAdminPanel();
+            activeUser = "";
             document.getElementById('app-view').classList.add('hidden');
             document.getElementById('login-view').classList.remove('hidden');
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
+            resetForm();
         }
 
-        function fetchCatalog() {
-            fetch(`${API_URL}/api/products`)
+        function fetchFeed() {
+            fetch(`${API_URL}/api/posts`)
                 .then(res => res.json())
-                .then(products => {
-                    const list = document.getElementById('product-list');
-                    list.innerHTML = '';
-                    products.forEach(p => {
-                        list.innerHTML += `
-                            <div class="product-card">
-                                <div class="product-icon">${p.image || '📦'}</div>
-                                <h4>${p.name}</h4>
-                                <p style="font-size:0.8rem; color:#666; margin:0 0 10px 0;">${p.description}</p>
-                                <div class="price">$${p.price}</div>
-                                <button class="action-btn" onclick="addToCart('${p.name}', ${p.price})">Add to Cart</button>
-                            </div>
-                        `;
-                    });
-                });
-        }
-
-        function addToCart(name, price) {
-            cart.push({ name, price });
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            const container = document.getElementById('cart-contents');
-            if (cart.length === 0) {
-                container.innerHTML = "Your cart is empty.";
-                document.getElementById('cart-total').innerText = "0";
-                return;
-            }
-            container.innerHTML = '';
-            let total = 0;
-            cart.forEach((item, index) => {
-                total += item.price;
-                container.innerHTML += `
-                    <div class="cart-item">
-                        <span>${item.name}</span>
-                        <span>$${item.price} <button onclick="removeFromCart(${index})" style="background:none; border:none; color:red; cursor:pointer;">✕</button></span>
-                    </div>
-                `;
-            });
-            document.getElementById('cart-total').innerText = total;
-        }
-
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCartUI();
-        }
-
-        function checkoutCart() {
-            if (cart.length === 0) return alert("Your cart is completely empty!");
-            const total = parseFloat(document.getElementById('cart-total').innerText);
-
-            fetch(`${API_URL}/api/orders`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ items: cart, total: total })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    alert("Order placed tracking code successfully!");
-                    cart = [];
-                    updateCartUI();
-                }
-            });
-        }
-
-        function showAdminPanel() {
-            document.getElementById('customer-dashboard').classList.add('hidden');
-            document.getElementById('admin-dashboard').classList.remove('hidden');
-            fetchAdminOrders();
-        }
-
-        function hideAdminPanel() {
-            document.getElementById('admin-dashboard').classList.add('hidden');
-            document.getElementById('customer-dashboard').classList.remove('hidden');
-            fetchCatalog();
-        }
-
-        function addNewProduct() {
-            const name = document.getElementById('new-p-name').value;
-            const price = parseFloat(document.getElementById('new-p-price').value);
-            const description = document.getElementById('new-p-desc').value;
-            const image = document.getElementById('new-p-icon').value;
-
-            if(!name || !price) return alert("Please fill item details.");
-
-            fetch(`${API_URL}/api/products`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, price, description, image })
-            }).then(() => {
-                alert("New Product Uploaded Successfully!");
-                document.getElementById('new-p-name').value = '';
-                document.getElementById('new-p-price').value = '';
-                document.getElementById('new-p-desc').value = '';
-                document.getElementById('new-p-icon').value = '';
-            });
-        }
-
-        function fetchAdminOrders() {
-            fetch(`${API_URL}/api/orders`)
-                .then(res => res.json())
-                .then(orders => {
-                    const list = document.getElementById('admin-orders-list');
-                    if(orders.length === 0) { list.innerHTML = "No orders found."; return; }
-                    list.innerHTML = '';
-                    orders.forEach(o => {
-                        const itemsList = o.items.map(i => i.name).join(', ');
-                        list.innerHTML += `
-                            <div class="order-item">
-                                <div>
-                                    <strong>Items:</strong> ${itemsList}<br>
-                                    <span style="font-size:0.8rem; color:#666;">Date: ${new Date(o.date).toLocaleTimeString()}</span>
+                .then(posts => {
+                    const feed = document.getElementById('blog-feed');
+                    feed.innerHTML = posts.length === 0 ? '<p style="text-align:center;">No publications found.</p>' : '';
+                    
+                    posts.forEach(post => {
+                        let commentsHTML = '';
+                        post.comments.forEach(c => {
+                            commentsHTML += `
+                                <div class="comment-item">
+                                    <strong>@${c.username}:</strong> ${c.text}
                                 </div>
-                                <div style="text-align:right;">
-                                    <strong style="color:#2ecc71;">$${o.total}</strong><br>
-                                    <span style="font-size:0.85rem; font-weight:bold;">[${o.status}]</span>
-                                </div>
-                            </div>
-                        `;
-                    });
-                });
-        }
-    </script>
-</body>
-</html>
+                            `;
+                        });
+
+                        // Show edit/delete options if the active user authored the article
+                        const controlsHTML = (activeUser === post.author || activeUser === 'admin') ? `
+                            <div class="post-actions">
+                                <button style="background:#f1c40f; color:#2f3542;" onclick="loadEditForm('${post._id}', \`${post.title}\`, \`${
